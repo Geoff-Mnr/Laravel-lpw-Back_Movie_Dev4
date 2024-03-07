@@ -23,12 +23,12 @@ class UsersController extends BaseController
     {
         try {
             $request -> validate([
-                'email' => ['required|email', 'unique:users'],
+                'email' => ['required','email', 'unique:users'],
                 'password' => 'required',
                 'confirm_password' => ['required', 'same:password']
             ]);
 
-            $input['password'] = bcrypt($input['password']);
+            $input['password'] = bcrypt($request['password']);
 
             $user = User::create($request->all());
             return $this->handleResponseNoPagination('User created successfully', $user);

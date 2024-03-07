@@ -6,22 +6,17 @@ use App\Models\Movie;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 
-class MoviesController extends Controller
+class MoviesController extends BaseController
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $search = $request->q;
-
         try {
-         $movies = Movie::where('title', 'like', "%$search%")
-            ->orWhere('director', 'like', "%$search%")
-            ->orWhere('synopsis', 'like', "%$search%")
-            ->get();
-            return $this->handleResponse('Movies retrieved successfully', $movies);}
-        catch (Exception $e) {
+            $movies = Movie::all();
+            return $this->handleResponseNoPagination('Movies retrieved successfully', $movies);
+        } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
     }
