@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
@@ -15,9 +15,9 @@ class AuthController extends BaseController
     {
         try {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $auth = Auth::user();
-            $success['token'] = $auth->createToken('LaravelSanctumAuth')->plainTextToken;
-            return $this->handleResponseNoPagination('Login successful', ['user' => $user, 'access_token' => $token]);
+            $user = Auth::user();
+            $token = $user->createToken('LaravelSanctumAuth')->plainTextToken;
+            return $this->handleResponseNoPagination('Login successful', ['user' => $user, 'access_token' => $token], 200);
         } else {
             return $this->handleError('Invalid email or password', 401);
         }
@@ -51,11 +51,7 @@ class AuthController extends BaseController
 
     public function logout(Request $request)
     {
-        try {
-            $request->user()->currentAccessToken()->delete();
-            return $this->handleResponseNoPagination('Logout successful', null);
-        } catch (Exception $e) {
-            return $this->handleError($e->getMessage(), 400);
-        }
+        auth()->user()->tokens()->delete();
+        return $this->handleResponseNoPagination('Logged out', null, 200);
     }
 }

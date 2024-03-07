@@ -14,12 +14,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login'])->name('login');
+Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register']);
+
+
+Route ::middleware('auth:sanctum')->group(function () {
+    Route::apiResources([
+        'users' => \App\Http\Controllers\API\UsersController::class,
+        'movies' => \App\Http\Controllers\API\MoviesController::class
+    ]);
+    Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
+});
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResources([
-    'users' => App\Http\Controllers\API\UsersController::class,
-    'movies' => App\Http\Controllers\API\MoviesController::class
-]);
+
 

@@ -11,13 +11,25 @@ class MoviesController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $movies = Movie::all();
-            return $this->handleResponseNoPagination('Movies retrieved successfully', $movies);
+            $movies = Movie::where('user_id', auth()->user()->id)->get();
+            return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
+        }
+
+        $search = $request->q;
+
+        if ($search) {
+            $movies = Movie::where('title', 'like', "%$search%")
+                ->orWhere('director', 'like', "%$search%")
+                ->orWhere('year', 'like', "%$search%")
+                ->orWhere('synopsis', 'like', "%$search%")
+                ->get();
+        } else {
+            $movies = Movie::all();
         }
     }
 
@@ -48,12 +60,11 @@ class MoviesController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id, Request $request)
+    public function show(string $id)
     {
         try {
-
-            $userId = $request->user()->id;
-            $movie = Movie::where('user_id, $userID')->where('id', $id)->with('user')->first();
+            
+            $movie = Movie::where('user_id', auth()->user()->id)->find($id);
             if ($movie) {
                 return $this->handleResponseNoPagination('Movie retrieved successfully', $movie, 200);
             } else {
