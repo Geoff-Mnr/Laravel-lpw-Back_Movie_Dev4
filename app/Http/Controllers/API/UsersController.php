@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
+use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 
-class UsersController extends Controller
+class UsersController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -28,9 +29,9 @@ class UsersController extends Controller
             ]);
             $input['password'] = bcrypt($input['password']);
             $user = User::create($request->all());
-            return $this->handleResponseNoPagination('User created successfully', $user, 201);
+            return $this->handleResponseNoPagination('User created successfully', $user);
         } catch (Exception $e) {
-            return $this->handleResponseNoPagination($e->getMessage(), 400);
+            return $this->handleError($e->getMessage(), 400);
         }
     }
 
@@ -43,10 +44,10 @@ class UsersController extends Controller
         if ($user) {
             return $this->handleResponseNoPagination('User retrieved successfully', $user, 200);
         } else {
-            return $this->handleResponseNoPagination('User not found', 404);
+            return $this->handleError('User not found', 400);
         }
         } catch (Exception $e) {
-            return $this->handleResponseNoPagination($e->getMessage(), 400);
+            return $this->handleError($e->getMessage(), 400);
         }
     }
 
@@ -61,16 +62,27 @@ class UsersController extends Controller
             $user->update($request->all());
             return $this->handleResponseNoPagination('User updated successfully', $user, 200);
         } else {
-            return $this->handleResponseNoPagination('User not found', 404);
+            return $this->handleError('User not found', 400);
         }
         } catch (Exception $e) {
-            return $this->handleResponseNoPagination($e->getMessage(), 400);
+            return $this->handleError($e->getMessage(), 400);
         }
     }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
-    {
+    { 
+        try {
+        $user = User::find($user->id);
+        if ($user) {
+            $user->delete();
+            return $this->handleResponseNoPagination('User deleted successfully', $user, 200);
+        } else {
+            return $this->handleError('User not found', 400);
+        }
+        } catch (Exception $e) {
+            return $this->handleError($e->getMessage(), 400);
+        }
     }
 }
