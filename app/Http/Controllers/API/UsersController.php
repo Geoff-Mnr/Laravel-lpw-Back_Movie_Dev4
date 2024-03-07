@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class UsersController extends Controller
             request -> validate([
                 'email' => ['required|email', 'unique:users'],
                 'password' => 'required',
-                'confirm_password' => ['required, same:password']
+                'confirm_password' => ['required', 'same:password']
             ]);
             $input['password'] = bcrypt($input['password']);
             $user = User::create($request->all());
