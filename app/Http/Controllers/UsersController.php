@@ -39,7 +39,15 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        //
+        try {
+        if ($user) {
+            return $this->handleResponseNoPagination('User retrieved successfully', $user, 200);
+        } else {
+            return $this->handleResponseNoPagination('User not found', 404);
+        }
+        } catch (Exception $e) {
+            return $this->handleResponseNoPagination($e->getMessage(), 400);
+        }
     }
 
     /**
@@ -47,14 +55,22 @@ class UsersController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        try {
+        $user = User::find($user->id);
+        if ($user) {
+            $user->update($request->all());
+            return $this->handleResponseNoPagination('User updated successfully', $user, 200);
+        } else {
+            return $this->handleResponseNoPagination('User not found', 404);
+        }
+        } catch (Exception $e) {
+            return $this->handleResponseNoPagination($e->getMessage(), 400);
+        }
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
     {
-        //
     }
 }
