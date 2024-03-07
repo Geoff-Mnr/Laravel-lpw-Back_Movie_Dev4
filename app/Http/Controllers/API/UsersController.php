@@ -11,7 +11,7 @@ class UsersController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return User::all();
     }
@@ -22,12 +22,14 @@ class UsersController extends BaseController
     public function store(Request $request)
     {
         try {
-            request -> validate([
+            $request -> validate([
                 'email' => ['required|email', 'unique:users'],
                 'password' => 'required',
                 'confirm_password' => ['required', 'same:password']
             ]);
+
             $input['password'] = bcrypt($input['password']);
+
             $user = User::create($request->all());
             return $this->handleResponseNoPagination('User created successfully', $user);
         } catch (Exception $e) {
@@ -38,9 +40,10 @@ class UsersController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(string $id)
     {
         try {
+        $user = User::find($id);
         if ($user) {
             return $this->handleResponseNoPagination('User retrieved successfully', $user, 200);
         } else {
