@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\UsersController;
+use App\Http\Controllers\API\MoviesController;
+use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login'])->name('login');
-Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register']);
+Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register'])->name('register');
 
 
 Route ::middleware('auth:sanctum')->group(function () {

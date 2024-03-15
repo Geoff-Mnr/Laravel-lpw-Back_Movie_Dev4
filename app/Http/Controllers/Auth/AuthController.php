@@ -28,26 +28,28 @@ class AuthController extends BaseController
 
     public function register(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'email' => 'required|email|unique:users',
-                'password' => 'required',
-                'confirm_password' => 'required|same:password'
-            ]);
+        try{
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
 
-            if ($validator->fails()) {
-                return $this->handleError($validator->errors(), 400);
-            }
+        ]);
 
-            $input = $request->all();
-            $input['password'] = bcrypt($input['password']);
-            $user = User::create($input);
-            $success['token'] = $user->createToken('LaravelSanctumAuth')->plainTextToken;
-            return $this->handleResponseNoPagination('User created successfully', ['user' => $user, 'access_token' => $token]);
+        $input = $request->all();
+
+        $input['password'] = bcrypt($input['password']);
+        $user = User::create($input);
+
+        $success['token'] = $user->createToken('LaravelSanctumAuth')->plainTextToken;
+        $success['user'] = $user;
+
+        return $this->handleResponseNoPagination('User registered successfully', $success, 201);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 500);
         }
     }
+    
 
     public function logout(Request $request)
     {
