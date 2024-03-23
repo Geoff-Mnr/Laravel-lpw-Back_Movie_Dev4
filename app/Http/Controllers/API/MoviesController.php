@@ -18,10 +18,8 @@ class MoviesController extends BaseController
             return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
-        }
-
+        }      
         $search = $request->q;
-
         if ($search) {
             $movies = Movie::where('title', 'like', "%$search%")
                 ->orWhere('director', 'like', "%$search%")

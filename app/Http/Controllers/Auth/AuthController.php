@@ -16,8 +16,13 @@ class AuthController extends BaseController
         try {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            $token = $user->createToken('LaravelSanctumAuth')->plainTextToken;
-            return $this->handleResponseNoPagination('Login successful', ['user' => $user, 'access_token' => $token], 200);
+            $token = $user->createToken('LaravelSanctumAuth');
+            $plainToken = $token->plainTextToken;
+
+            $expirationHours= 12;
+            $expiresAt = now()->addHours($expirationHours)->toDateTimeString();
+
+            return $this->handleResponseNoPagination('Login successful', ['user' => $user, 'access_token'=> $plainToken, 'token_type' => 'Bearer', 'expires_at' => $expiresAt], 200);
         } else {
             return $this->handleError('Invalid email or password', 401);
         }
