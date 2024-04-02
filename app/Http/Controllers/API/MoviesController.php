@@ -61,10 +61,18 @@ class MoviesController extends BaseController
     public function show(string $id)
     {
         try {
-            
             $movie = Movie::where('user_id', auth()->user()->id)->find($id);
             if ($movie) {
-                return $this->handleResponseNoPagination('Movie retrieved successfully', $movie, 200);
+                return $this->handleResponseNoPagination('Movie retrieved successfully', [
+                    'movie' => [
+                        'title' => $movie->title,
+                        'director' => $movie->director,
+                        'year' => $movie->year,
+                        'synopsis' => $movie->synopsis,
+                        'created_at' => $movie->created_at,
+                        'updated_at' => $movie->updated_at
+                    ]
+                ], 200);
             } else {
                 return $this->handleError('Movie not found', 400);
             }
@@ -84,9 +92,6 @@ class MoviesController extends BaseController
             }
             $validatedData = $request->validate([
                 'title' => 'required',
-                'director' => 'required',
-                'year' => 'required',
-                'synopsis' => 'required',
             ]);
 
             $movie->update($validatedData);

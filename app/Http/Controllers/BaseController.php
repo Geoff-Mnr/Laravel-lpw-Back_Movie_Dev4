@@ -44,4 +44,12 @@ class BaseController extends Controller
             'code' => $code
             ], $code);
     }
+
+    public function handleError($message, $code)
+    {
+        return response()->json([
+            'message' => $message,
+            'code' => $code
+            ], $code);
+    }
 }
