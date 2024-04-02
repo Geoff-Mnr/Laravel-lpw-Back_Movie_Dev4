@@ -79,13 +79,19 @@ class MoviesController extends BaseController
     public function update(Request $request, Movie $movie)
     {
         try {
-            $movie = Movie::find($movie->id);
-            if ($movie) {
-                $movie->update($request->all());
-                return $this->handleResponseNoPagination('Movie updated successfully', $movie, 200);
-            } else {
-                return $this->handleError('Movie not found', 400);
+            if ($movie->user_id !== auth()->id()) {
+                return $this->handleError('You are not authorized to update this movie', 401);
             }
+            $validatedData = $request->validate([
+                'title' => 'required',
+                'director' => 'required',
+                'year' => 'required',
+                'synopsis' => 'required',
+            ]);
+
+            $movie->update($validatedData);
+
+            return $this->handleResponseNoPagination('Movie updated successfully', $movie, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
