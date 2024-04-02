@@ -13,7 +13,19 @@ class UsersController extends BaseController
      */
     public function index(Request $request)
     {
-        return User::all();
+        try {
+            $users = User::all()->map(function ($user) {
+                return [
+                    'email' => $user->email,
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at,
+                ];
+            });
+
+            return $this->handleResponseNoPagination('Users retrieved successfully', $users, 200);
+        } catch (Exception $e) {
+            return $this->handleError($e->getMessage(), 400);
+        }
     }
 
     /**
@@ -45,7 +57,11 @@ class UsersController extends BaseController
         try {
         $user = User::find($id);
         if ($user) {
-            return $this->handleResponseNoPagination('User retrieved successfully', $user, 200);
+            return $this->handleResponseNoPagination('User retrieved successfully', [
+                'email' => $user->email,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ], 200);
         } else {
             return $this->handleError('User not found', 400);
         }

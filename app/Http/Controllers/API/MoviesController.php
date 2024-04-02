@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Movie;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class MoviesController extends BaseController
 {
@@ -18,16 +19,6 @@ class MoviesController extends BaseController
             return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
-        }      
-        $search = $request->q;
-        if ($search) {
-            $movies = Movie::where('title', 'like', "%$search%")
-                ->orWhere('director', 'like', "%$search%")
-                ->orWhere('year', 'like', "%$search%")
-                ->orWhere('synopsis', 'like', "%$search%")
-                ->get();
-        } else {
-            $movies = Movie::all();
         }
     }
 
@@ -61,18 +52,10 @@ class MoviesController extends BaseController
     public function show(string $id)
     {
         try {
+            
             $movie = Movie::where('user_id', auth()->user()->id)->find($id);
             if ($movie) {
-                return $this->handleResponseNoPagination('Movie retrieved successfully', [
-                    'movie' => [
-                        'title' => $movie->title,
-                        'director' => $movie->director,
-                        'year' => $movie->year,
-                        'synopsis' => $movie->synopsis,
-                        'created_at' => $movie->created_at,
-                        'updated_at' => $movie->updated_at
-                    ]
-                ], 200);
+                return $this->handleResponseNoPagination('Movie retrieved successfully', $movie, 200);
             } else {
                 return $this->handleError('Movie not found', 400);
             }
@@ -84,23 +67,32 @@ class MoviesController extends BaseController
     /**
      * Update the specified resource in storage.
      */
+
     public function update(Request $request, Movie $movie)
     {
         try {
-            if ($movie->user_id !== auth()->id()) {
-                return $this->handleError('You are not authorized to update this movie', 401);
-            }
-            $validatedData = $request->validate([
-                'title' => 'required',
-            ]);
-
-            $movie->update($validatedData);
-
-            return $this->handleResponseNoPagination('Movie updated successfully', $movie, 200);
+            $movie = Movie::where('user_id', auth()->user()->id)->findOrFail($movie->id);
+            
+            $data = $request->only(['title', 'director', 'year', 'synopsis']);
+            $movie->update($data);
+    
+            $response = [
+                'title' => $movie->title,
+                'director' => $movie->director,
+                'year' => $movie->year,
+                'synopsis' => $movie->synopsis,
+                'created_at' => $movie->created_at->toDateTimeString(),  
+                'updated_at' => $movie->updated_at->toDateTimeString(),
+            ];
+    
+            return $this->handleResponseNoPagination('Movie updated successfully', $response, 200);
+        } catch (ModelNotFoundException $e) {
+            return $this->handleError('You are not authorized to update this movie or movie not found', 403);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
     }
+    
 
     /**
      * Remove the specified resource from storage.
