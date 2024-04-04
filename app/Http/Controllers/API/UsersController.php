@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
+use App\Models\Role;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 
@@ -14,15 +15,17 @@ class UsersController extends BaseController
     public function index(Request $request)
     {
         try {
-            $users = User::all()->map(function ($user) {
+            $users = User::with('role')->get();
+            
+            $filteredUsers = $users->map(function ($user) {
                 return [
+                    'id' => $user->id,
+                    'name' => $user->name,
                     'email' => $user->email,
-                    'created_at' => $user->created_at,
-                    'updated_at' => $user->updated_at,
+                    'role' => $user->role?->name,
                 ];
             });
-
-            return $this->handleResponseNoPagination('Users retrieved successfully', $users, 200);
+            return $this->handleResponseNoPagination('Users retrieved successfully', $filteredUsers, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
@@ -35,6 +38,7 @@ class UsersController extends BaseController
     {
         try {
             $request -> validate([
+                'name' => 'required',
                 'email' => ['required','email', 'unique:users'],
                 'password' => 'required',
                 'confirm_password' => ['required', 'same:password']
@@ -55,13 +59,9 @@ class UsersController extends BaseController
     public function show(string $id)
     {
         try {
-        $user = User::find($id);
+        $user = User::where('id', $id)->with('role')->first();
         if ($user) {
-            return $this->handleResponseNoPagination('User retrieved successfully', [
-                'email' => $user->email,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at
-            ], 200);
+            return $this->handleResponseNoPagination('User retrieved successfully', $user, 200);
         } else {
             return $this->handleError('User not found', 400);
         }
