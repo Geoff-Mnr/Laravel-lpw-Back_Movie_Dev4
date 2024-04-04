@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\API\MoviesController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\API\RolesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +22,10 @@ Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login'
 Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register'])->name('register');
 
 
+
 Route ::middleware('auth:sanctum')->group(function () {
     Route::apiResources([
+        'roles' => \App\Http\Controllers\API\RolesController::class,
         'users' => \App\Http\Controllers\API\UsersController::class,
         'movies' => \App\Http\Controllers\API\MoviesController::class
     ]);

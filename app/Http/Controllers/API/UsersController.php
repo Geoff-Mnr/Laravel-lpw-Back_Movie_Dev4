@@ -20,7 +20,7 @@ class UsersController extends BaseController
             $filteredUsers = $users->map(function ($user) {
                 return [
                     'id' => $user->id,
-                    'name' => $user->name,
+                    'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role?->name,
                 ];
@@ -41,7 +41,7 @@ class UsersController extends BaseController
                 'name' => 'required',
                 'email' => ['required','email', 'unique:users'],
                 'password' => 'required',
-                'confirm_password' => ['required', 'same:password']
+                'confirm_password' => ['required', 'same:password'],
             ]);
 
             $input['password'] = bcrypt($request['password']);

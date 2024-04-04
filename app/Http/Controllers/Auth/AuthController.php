@@ -50,6 +50,7 @@ class AuthController extends BaseController
 
         $input = $request->all();
 
+        $input['role_id'] = 2; // [2 => 'User', 1 => 'Admin']
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
 
