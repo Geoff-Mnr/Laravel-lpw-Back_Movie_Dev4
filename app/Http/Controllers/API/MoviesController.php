@@ -17,6 +17,7 @@ class MoviesController extends BaseController
         try {
             $movies = Movie::where('user_id', auth()->user()->id)->get()->map(function ($movie) {
                 return [
+                    'id' => $movie->id,
                     'title' => $movie->title,
                     'director' => $movie->director,
                     'year' => $movie->year,
@@ -30,6 +31,14 @@ class MoviesController extends BaseController
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
+
+        /* try {
+            $movies = Movie::where('user_id', auth()->user()->id)->get();
+            return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
+        } catch (Exception $e) {
+            return $this->handleError($e->getMessage(), 400);
+        } */
+
     }
 
     /**
@@ -81,29 +90,22 @@ class MoviesController extends BaseController
     public function update(Request $request, Movie $movie)
     {
         try {
-            $movie = Movie::where('user_id', auth()->user()->id)->findOrFail($movie->id);
+            $movie = Movie::find($movie->id);
+            if (!$movie) {
+                return $this->handleError('Movie not found', 400);
+            }
             
-            $data = $request->only(['title', 'director', 'year', 'synopsis']);
-            $movie->update($data);
-    
-            $response = [
-                'title' => $movie->title,
-                'director' => $movie->director,
-                'year' => $movie->year,
-                'synopsis' => $movie->synopsis,
-                'created_at' => $movie->created_at->toDateTimeString(),  
-                'updated_at' => $movie->updated_at->toDateTimeString(),
-            ];
-    
-            return $this->handleResponseNoPagination('Movie updated successfully', $response, 200);
-        } catch (ModelNotFoundException $e) {
-            return $this->handleError('You are not authorized to update this movie or movie not found', 403);
+            if ($movie->user_id !== auth()->user()->id) {
+                return $this->handleError('Unauthorized', 403);
+            }
+
+            $movie->update($request->all());
+
+            return $this->handleResponseNoPagination('Movie updated successfully', $movie, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
-        }
+        }            
     }
-    
-
     /**
      * Remove the specified resource from storage.
      */
