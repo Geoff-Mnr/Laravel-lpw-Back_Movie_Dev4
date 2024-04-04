@@ -14,25 +14,30 @@ class MoviesController extends BaseController
      */
     public function index(Request $request)
     {
+
+        $search = $request->q;
+        $perPage = $request->input('per_page', 10);
+        
         try {
-            $movies = Movie::where('user_id', auth()->user()->id)->get()->map(function ($movie) {
-                return [
-                    'id' => $movie->id,
-                    'title' => $movie->title,
-                    'director' => $movie->director,
-                    'year' => $movie->year,
-                    'synopsis' => $movie->synopsis,
-                    'created_at' => $movie->created_at->toDateTimeString(),
-                    'updated_at' => $movie->updated_at->toDateTimeString(),
-                ];
+            
+            $query = Movie::where('user_id', auth()->user()->id)
+            ->when($search, function ($query) use ($search) {
+                return $query->where(function($query) use ($search) {
+                    $query->where('title', 'like', "%$search%")
+                        ->orWhere('synopsis', 'like', "%$search%");
+                })->orWhereHas('director', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                });
             });
 
-            return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
+            $movies = $query->paginate($perPage);
+
+            return $this->handleResponse('Movies retrieved successfully', $movies, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
     }
-
+     
     /**
      * Store a newly created resource in storage.
      */
