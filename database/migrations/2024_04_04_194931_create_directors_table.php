@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 return new class extends Migration
 {
     /**
@@ -13,8 +14,15 @@ return new class extends Migration
     {
         Schema::create('directors', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
+            $table->string('description')->nullable();
+            $table->string('comment')->nullable();
+            $table->string('status', 1)->default('N');
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('created_by')->nullable(false)->default(1);
+            $table->unsignedInteger('updated_by')->nullable(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
