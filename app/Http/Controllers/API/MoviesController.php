@@ -37,7 +37,7 @@ class MoviesController extends BaseController
             return $this->handleError($e->getMessage(), 400);
         }
     }
-     
+    
     /**
      * Store a newly created resource in storage.
      */
