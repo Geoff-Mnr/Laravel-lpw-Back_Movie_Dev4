@@ -15,7 +15,17 @@ class MoviesController extends BaseController
     public function index(Request $request)
     {
         try {
-            $movies = Movie::where('user_id', auth()->user()->id)->get();
+            $movies = Movie::where('user_id', auth()->user()->id)->get()->map(function ($movie) {
+                return [
+                    'title' => $movie->title,
+                    'director' => $movie->director,
+                    'year' => $movie->year,
+                    'synopsis' => $movie->synopsis,
+                    'created_at' => $movie->created_at->toDateTimeString(),
+                    'updated_at' => $movie->updated_at->toDateTimeString(),
+                ];
+            });
+
             return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
