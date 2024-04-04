@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Movie;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class MoviesController extends BaseController
 {
@@ -31,14 +31,6 @@ class MoviesController extends BaseController
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
-
-        /* try {
-            $movies = Movie::where('user_id', auth()->user()->id)->get();
-            return $this->handleResponseNoPagination('Movies retrieved successfully', $movies, 200);
-        } catch (Exception $e) {
-            return $this->handleError($e->getMessage(), 400);
-        } */
-
     }
 
     /**
@@ -106,6 +98,7 @@ class MoviesController extends BaseController
             return $this->handleError($e->getMessage(), 400);
         }            
     }
+
     /**
      * Remove the specified resource from storage.
      */
