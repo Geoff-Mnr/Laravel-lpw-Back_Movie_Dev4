@@ -45,7 +45,7 @@ class MoviesController extends BaseController
         try {
             $request -> validate([
                 'title' => 'required',
-                'director' => 'required',
+                'director_id' => 'required',
                 'year' => 'required',
                 'synopsis' => 'required',
             ]);
