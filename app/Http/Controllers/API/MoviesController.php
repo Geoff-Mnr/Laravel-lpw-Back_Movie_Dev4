@@ -30,14 +30,13 @@ class MoviesController extends BaseController
                 });
             });
 
-            $movies = $query->paginate($perPage);
+            $movies = $query->paginate($perPage)->withQueryString();
 
-            return $this->handleResponse('Movies retrieved successfully', $movies, 200);
+            return $this->handleResponse('Movies retrieved successfully', $movies);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
-    }
-    
+}
     /**
      * Store a newly created resource in storage.
      */
