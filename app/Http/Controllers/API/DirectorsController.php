@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\BaseController;
 use App\Models\Director;
 use Illuminate\Http\Request;
+use Exception;
+
 
 class DirectorsController extends BaseController
 {
@@ -17,7 +19,11 @@ class DirectorsController extends BaseController
         $perPage =$request->input('per_page', 10);
 
         try {
-            $directors = Director::where('name', 'like', "%$search%")->paginate($perPage);
+            $query = Director::when($search, function ($query) use ($search) {
+                return $query->where('name', 'like', "%$search%");
+            });
+
+            $directors = $query->paginate($perPage)->withQueryString();
             return $this->handleResponse('Directors retrieved successfully', $directors, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
@@ -31,7 +37,7 @@ class DirectorsController extends BaseController
     {
         try {
             $request->validate([
-                'name' => 'required'|'min:3',
+                'name' => 'required|min:3', 
             ]);
 
             $director = Director::create($request->all());

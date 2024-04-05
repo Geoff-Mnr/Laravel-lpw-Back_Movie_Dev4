@@ -6,6 +6,7 @@ use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\API\MoviesController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\API\RolesController;
+use App\Http\Controllers\API\DirectorsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,8 @@ Route ::middleware('auth:sanctum')->group(function () {
     Route::apiResources([
         'roles' => \App\Http\Controllers\API\RolesController::class,
         'users' => \App\Http\Controllers\API\UsersController::class,
-        'movies' => \App\Http\Controllers\API\MoviesController::class
+        'movies' => \App\Http\Controllers\API\MoviesController::class,
+        'directors' => \App\Http\Controllers\API\DirectorsController::class
     ]);
     Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
