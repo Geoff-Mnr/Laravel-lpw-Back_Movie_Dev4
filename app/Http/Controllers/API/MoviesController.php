@@ -69,8 +69,8 @@ class MoviesController extends BaseController
         try {
             
             $movie = Movie::where('user_id', auth()->user()->id)->find($id);
-            if ($movie) {
-                return $this->handleResponseNoPagination('Movie retrieved successfully', $movie, 200);
+            if ($movie ->with ('director')->first()) {
+                return $this->handleResponseNoPagination('Movie retrieved successfully', $movie);
             } else {
                 return $this->handleError('Movie not found', 400);
             }
