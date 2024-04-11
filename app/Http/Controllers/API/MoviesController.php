@@ -23,16 +23,13 @@ class MoviesController extends BaseController
             $query = Movie::where('user_id', auth()->user()->id)
             ->with('director')
             ->when($search, function ($query) use ($search) {
-                return $query->where(function($query) use ($search) {
-                    $query->where('title', 'like', "%$search%")
-                        ->orWhere('synopsis', 'like', "%$search%");
-                })
+            return $query->where('title', 'like', "%$search%")
+                ->orWhere('year', 'like', "%$search%")
+                ->orWhere('synopsis', 'like', "%$search%")
                 ->orWhereHas('director', function ($query) use ($search) {
                     $query->where('name', 'like', "%$search%");
                 });
-            });
-        
-
+        });
             $movies = $query->paginate($perPage)->withQueryString();
 
             $movies->getCollection()->transform(function ($movie) {
@@ -106,21 +103,11 @@ class MoviesController extends BaseController
     public function update(Request $request, Movie $movie)
     {
         try {
-            $movie = Movie::find($movie->id);
-            if (!$movie) {
-                return $this->handleError('Movie not found', 400);
-            }
-            
-            if ($movie->user_id !== auth()->user()->id) {
-                return $this->handleError('Unauthorized', 403);
-            }
-
             $movie->update($request->all());
-
             return $this->handleResponseNoPagination('Movie updated successfully', $movie, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
-        }            
+        }
     }
 
     /**

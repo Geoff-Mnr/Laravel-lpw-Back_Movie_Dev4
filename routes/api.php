@@ -24,6 +24,7 @@ Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'reg
 
 
 
+
 Route ::middleware('auth:sanctum')->group(function () {
     Route::apiResources([
         'roles' => \App\Http\Controllers\API\RolesController::class,
@@ -31,6 +32,7 @@ Route ::middleware('auth:sanctum')->group(function () {
         'movies' => \App\Http\Controllers\API\MoviesController::class,
         'directors' => \App\Http\Controllers\API\DirectorsController::class
     ]);
+    Route::get('/listdirectors', [\App\Http\Controllers\API\DirectorsController::class, 'list']);
     Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
 

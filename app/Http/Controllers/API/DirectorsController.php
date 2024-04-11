@@ -24,6 +24,16 @@ class DirectorsController extends BaseController
             });
 
             $directors = $query->paginate($perPage)->withQueryString();
+            $directors->getCollection()->transform(function ($director) {
+                return [
+                    'id' => $director->id,
+                    'name' => $director->name,
+                    'created_at' => $director->created_at->format('Y-m-d H:i:s'),
+                    'updated_at' => $director->updated_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
+
             return $this->handleResponse('Directors retrieved successfully', $directors, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
@@ -71,6 +81,16 @@ class DirectorsController extends BaseController
 
             $director->update($request->all());
             return $this->handleResponseNoPagination('Director updated successfully', $director, 200);
+        } catch (Exception $e) {
+            return $this->handleError($e->getMessage(), 400);
+        }
+    }
+
+    public function list()
+    {
+        try {
+            $directors = Director::all();
+            return $this->handleResponseNoPagination('Directors retrieved successfully', $directors, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
