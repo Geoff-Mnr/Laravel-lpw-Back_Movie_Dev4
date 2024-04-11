@@ -21,16 +21,31 @@ class MoviesController extends BaseController
         try {
             
             $query = Movie::where('user_id', auth()->user()->id)
+            ->with('director')
             ->when($search, function ($query) use ($search) {
                 return $query->where(function($query) use ($search) {
                     $query->where('title', 'like', "%$search%")
                         ->orWhere('synopsis', 'like', "%$search%");
-                })->orWhereHas('director', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%");
+                })
+                ->orWhereHas('director', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
                 });
             });
+        
 
             $movies = $query->paginate($perPage)->withQueryString();
+
+            $movies->getCollection()->transform(function ($movie) {
+                return [
+                    'id' => $movie->id,
+                    'title' => $movie->title,
+                    'director' => $movie->director->name,
+                    'year' => $movie->year,
+                    'synopsis' => $movie->synopsis,
+                    'created_at' => $movie->created_at->format('Y-m-d H:i:s'),
+                    'updated_at' => $movie->updated_at->format('Y-m-d H:i:s'),
+                ];
+            });
 
             return $this->handleResponse('Movies retrieved successfully', $movies);
         } catch (Exception $e) {
@@ -67,10 +82,15 @@ class MoviesController extends BaseController
     public function show(string $id)
     {
         try {
-            
-            $movie = Movie::where('user_id', auth()->user()->id)->find($id);
-            if ($movie ->with ('director')->first()) {
-                return $this->handleResponseNoPagination('Movie retrieved successfully', $movie);
+            $movie = Movie::where('user_id', auth()->user()->id)->where('id', $id)->with('director')->first();
+            if ($movie) {
+                $movieData = [
+                    'id' => $movie->id,
+                    'title' => $movie->title,
+                    'director' => $movie->director->name,
+                    'year' => $movie->year,
+                    'synopsis' => $movie->synopsis,];
+                return $this->handleResponseNoPagination('Movie retrieved successfully', $movieData, 200);
             } else {
                 return $this->handleError('Movie not found', 400);
             }
