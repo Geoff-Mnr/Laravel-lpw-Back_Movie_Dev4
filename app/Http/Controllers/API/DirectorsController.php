@@ -102,8 +102,13 @@ class DirectorsController extends BaseController
     public function destroy(Director $director)
     {
         try {
-            $director->delete();
-            return $this->handleResponseNoPagination('Director deleted successfully', null, 200);
+           $director = Director::find($director->id);
+              if ($director) {
+                $director->delete();
+                return $this->handleResponseNoPagination('Director deleted successfully', $director, 200);
+              } else {
+                return $this->handleError('Director not found', 400);
+              }
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }

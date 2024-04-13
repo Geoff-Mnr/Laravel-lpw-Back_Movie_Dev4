@@ -33,6 +33,7 @@ Route ::middleware('auth:sanctum')->group(function () {
         'directors' => \App\Http\Controllers\API\DirectorsController::class
     ]);
     Route::get('/listdirectors', [\App\Http\Controllers\API\DirectorsController::class, 'list']);
+    Route::get('/getprofile', [\App\Http\Controllers\API\UsersController::class, 'getprofile']);
     Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
 });
 

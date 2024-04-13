@@ -24,8 +24,12 @@ class AuthController extends BaseController
     
                 return $this->handleResponseNoPagination('Login successful', [
                     'user' => [
+                        'username' => $user->username,
                         'email' => $user->email,
-                    ], 
+                        'role_id' => $user->role_id,
+                        'role_name' => $user->role->name ?? 'User'
+
+                    ],  
                     'access_token'=> $plainToken, 
                     'token_type' => 'Bearer', 
                     'expires_at' => $expiresAt
@@ -50,7 +54,7 @@ class AuthController extends BaseController
 
         $input = $request->all();
 
-        $input['role_id'] = 2; // [2 => 'User', 1 => 'Admin']
+        $input['role_id'] = 1; // [2 => 'User', 1 => 'Admin']
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
 
