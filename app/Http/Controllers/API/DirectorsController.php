@@ -101,14 +101,13 @@ class DirectorsController extends BaseController
      */
     public function destroy(Director $director)
     {
+        // i want return 403 if the director has movies
         try {
-           $director = Director::find($director->id);
-              if ($director) {
-                $director->delete();
-                return $this->handleResponseNoPagination('Director deleted successfully', $director, 200);
-              } else {
-                return $this->handleError('Director not found', 400);
-              }
+            if ($director->movies->count() > 0) {
+                return $this->handleError('Director has movies', 403);
+            }
+            $director->delete();
+            return $this->handleResponseNoPagination('Director deleted successfully', $director, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }

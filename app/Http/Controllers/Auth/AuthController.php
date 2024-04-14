@@ -26,7 +26,6 @@ class AuthController extends BaseController
                     'user' => [
                         'username' => $user->username,
                         'email' => $user->email,
-                        'role_id' => $user->role_id,
                         'role_name' => $user->role->name ?? 'User'
 
                     ],  

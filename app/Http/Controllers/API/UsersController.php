@@ -29,7 +29,6 @@ class UsersController extends BaseController
                     'id' => $user->id,
                     'username' => $user->username,
                     'email' => $user->email,
-                    'role_id' => $user->role_id,
                     'role_name' => $user->role->name ?? 'User',
                     'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                     'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
@@ -76,7 +75,6 @@ class UsersController extends BaseController
                 'id' => $user->id,
                 'username' => $user->username,
                 'email' => $user->email,
-                'role_id' => $user->role_id,
                 'role_name' => $user->role->name ?? 'User'
             ];
             return $this->handleResponseNoPagination('User retrieved successfully', $userData, 200);
@@ -131,7 +129,6 @@ class UsersController extends BaseController
                'id' => $user->id,
                'username' => $user->username,
                'email' => $user->email,
-               'role_id' => $user->role_id,
                'role_name' => $user->role->name ?? 'User'
            ];
            return $this->handleResponseNoPagination('User profile retrieved successfully', $userData, 200);
