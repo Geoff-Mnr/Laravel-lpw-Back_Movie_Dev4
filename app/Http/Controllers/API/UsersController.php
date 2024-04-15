@@ -35,6 +35,7 @@ class UsersController extends BaseController
                     'is_active' => $user->is_active ? 'Actif' : 'Banni',
                 ];
             });
+           
 
             return $this->handleResponse('Users retrieved successfully', $users, 200);
         } catch (Exception $e) {
