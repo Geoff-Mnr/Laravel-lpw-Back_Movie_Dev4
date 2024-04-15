@@ -49,6 +49,7 @@ class MoviesController extends BaseController
             return $this->handleError($e->getMessage(), 400);
         }
 }
+    
     /**
      * Store a newly created resource in storage.
      */
@@ -126,5 +127,37 @@ class MoviesController extends BaseController
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
         }
+    }
+
+    public function getAllMovies(Request $request)
+    {
+        $search = $request->q;
+        $perPage = $request->input('per_page', 10);
+
+        $query = Movie::query()
+            ->with('director', 'user')
+            ->when($search, function ($query) use ($search) {
+                return $query->where('title', 'like', "%$search%")
+                    ->orWhere('year', 'like', "%$search%")
+                    ->orWhere('synopsis', 'like', "%$search%")
+                    ->orWhereHas('director', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    });
+            });
+
+        $movies = $query->paginate($perPage)->withQueryString();
+
+        $movies->getCollection()->transform(function ($movie) {
+            return [
+                'title' => $movie->title,
+                'director' => $movie->director->name,
+                'year' => $movie->year,
+                'synopsis' => $movie->synopsis,
+                'created_at' => $movie->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $movie->updated_at->format('Y-m-d H:i:s'),
+                'created_by' => $movie->user->username,
+            ];
+        });
+        return $this->handleResponse('Movies retrieved successfully', $movies);
     }
 }

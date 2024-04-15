@@ -75,9 +75,6 @@ class DirectorsController extends BaseController
     public function update(Request $request, Director $director)
     {
         try {
-            $request->validate([
-                'name' => 'required'|'min:3',
-            ]);
 
             $director->update($request->all());
             return $this->handleResponseNoPagination('Director updated successfully', $director, 200);

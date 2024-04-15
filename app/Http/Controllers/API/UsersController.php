@@ -32,6 +32,7 @@ class UsersController extends BaseController
                     'role_name' => $user->role->name ?? 'User',
                     'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                     'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
+                    'is_active' => $user->is_active ? 'Actif' : 'Banni',
                 ];
             });
 
@@ -129,7 +130,7 @@ class UsersController extends BaseController
                'id' => $user->id,
                'username' => $user->username,
                'email' => $user->email,
-               'role_name' => $user->role->name ?? 'User'
+               'role_name' => $user->role->name ?? 'User',
            ];
            return $this->handleResponseNoPagination('User profile retrieved successfully', $userData, 200);
        } catch (Exception $e) {
