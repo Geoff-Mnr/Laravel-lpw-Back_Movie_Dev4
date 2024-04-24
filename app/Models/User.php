@@ -54,4 +54,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function movies()
+    {
+        return $this->hasMany(Movie::class);
+    }
 }

@@ -33,6 +33,7 @@ class MoviesController extends BaseController
             $movies = $query->paginate($perPage)->withQueryString();
 
             $movies->getCollection()->transform(function ($movie) {
+                $movieCount = Movie::where('user_id', $movie->user_id)->count();
                 return [
                     'id' => $movie->id,
                     'title' => $movie->title,
@@ -41,6 +42,7 @@ class MoviesController extends BaseController
                     'synopsis' => $movie->synopsis,
                     'created_at' => $movie->created_at->format('Y-m-d H:i:s'),
                     'updated_at' => $movie->updated_at->format('Y-m-d H:i:s'),
+                    'user_movie_count' => $movieCount
                 ];
             });
 
@@ -87,7 +89,8 @@ class MoviesController extends BaseController
                     'title' => $movie->title,
                     'director' => $movie->director->name,
                     'year' => $movie->year,
-                    'synopsis' => $movie->synopsis,];
+                    'synopsis' => $movie->synopsis,
+                ];
                 return $this->handleResponseNoPagination('Movie retrieved successfully', $movieData, 200);
             } else {
                 return $this->handleError('Movie not found', 400);
@@ -158,6 +161,37 @@ class MoviesController extends BaseController
                 'created_by' => $movie->user->username,
             ];
         });
+        return $this->handleResponse('Movies retrieved successfully', $movies);
+    }
+
+    function getMoviesByUserId (Request $request, $id) {
+        $search = $request->q;
+        $perPage = $request->input('per_page', 10);
+
+        $query = Movie::where('user_id', $id)
+            ->with('director')
+            ->when($search, function ($query) use ($search) {
+                return $query->where('title', 'like', "%$search%")
+                    ->orWhere('year', 'like', "%$search%")
+                    ->orWhere('synopsis', 'like', "%$search%")
+                    ->orWhereHas('director', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    });
+            });
+
+        $movies = $query->paginate($perPage)->withQueryString();
+
+        $movies->getCollection()->transform(function ($movie) {
+            return [
+                'title' => $movie->title,
+                'director' => $movie->director->name,
+                'year' => $movie->year,
+                'synopsis' => $movie->synopsis,
+                'created_at' => $movie->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $movie->updated_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
         return $this->handleResponse('Movies retrieved successfully', $movies);
     }
 }

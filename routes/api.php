@@ -36,6 +36,8 @@ Route ::middleware('auth:sanctum')->group(function () {
     Route::get('/getprofile', [\App\Http\Controllers\API\UsersController::class, 'getprofile']);
     Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout']);
     Route::get('/getallmovies', [\App\Http\Controllers\API\MoviesController::class, 'getallmovies']);
+    Route::get('/getmoviesbyuserid/{id}', [\App\Http\Controllers\API\MoviesController::class, 'getMoviesByUserId']);
+
 });
 
 
