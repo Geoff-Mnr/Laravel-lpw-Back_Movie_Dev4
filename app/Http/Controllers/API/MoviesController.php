@@ -42,7 +42,6 @@ class MoviesController extends BaseController
                     'synopsis' => $movie->synopsis,
                     'created_at' => $movie->created_at->format('Y-m-d H:i:s'),
                     'updated_at' => $movie->updated_at->format('Y-m-d H:i:s'),
-                    'user_movie_count' => $movieCount
                 ];
             });
 
@@ -67,7 +66,6 @@ class MoviesController extends BaseController
 
             
             $request['user_id'] = $request->user()->id;
-
             $movie = Movie::create($request->all());
 
             return $this->handleResponseNoPagination('Movie created successfully', $movie);
@@ -131,6 +129,10 @@ class MoviesController extends BaseController
             return $this->handleError($e->getMessage(), 400);
         }
     }
+
+    /**
+     * Get all movies
+     */
 
     public function getAllMovies(Request $request)
     {

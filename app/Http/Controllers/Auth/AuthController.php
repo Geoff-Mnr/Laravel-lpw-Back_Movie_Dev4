@@ -21,7 +21,6 @@ class AuthController extends BaseController
                     return $this->handleError('Your account is banned', 403);
                 }
 
-
                 $token = $user->createToken('LaravelSanctumAuth');
                 $plainToken = $token->plainTextToken;
     
@@ -59,7 +58,7 @@ class AuthController extends BaseController
 
         $input = $request->all();
 
-        $input['role_id'] = 1; // [2 => 'User', 1 => 'Admin']
+        $input['role_id'] = 1; 
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
 

@@ -48,8 +48,6 @@ class RolesController extends BaseController
     {
         try{
         $role = Role::where('id', $role->id)->with('users')->first();
-        
-
         if ($role) {
             return $this->handleResponseNoPagination('Role retrieved successfully', $role, 200);
         } else {

@@ -124,20 +124,24 @@ class UsersController extends BaseController
         }
     }
 
-   public function getprofile (Request $request)
-   {
-       try {
-           $user = $request->user();
-           $userData = [
-               'id' => $user->id,
-               'username' => $user->username,
-               'email' => $user->email,
-               'role_name' => $user->role->name ?? 'User',
-               'nbMovies' => $user->movies->count() . ' movies',
-           ];
-           return $this->handleResponseNoPagination('User profile retrieved successfully', $userData, 200);
-       } catch (Exception $e) {
-           return $this->handleError($e->getMessage(), 400);
-       }
-   }
-}
+
+    /**
+     * Get the user profile.
+     */
+    public function getprofile (Request $request)
+    {
+        try {
+            $user = $request->user();
+            $userData = [
+                'id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'role_name' => $user->role->name ?? 'User',
+                'nbMovies' => $user->movies->count() . ' movies',
+            ];
+            return $this->handleResponseNoPagination('User profile retrieved successfully', $userData, 200);
+        } catch (Exception $e) {
+            return $this->handleError($e->getMessage(), 400);
+        }
+    }
+    }
