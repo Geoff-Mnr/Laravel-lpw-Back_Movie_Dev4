@@ -37,6 +37,7 @@ class MoviesController extends BaseController
                 return [
                     'id' => $movie->id,
                     'title' => $movie->title,
+                    'director_id' => $movie->director_id,
                     'director' => $movie->director->name,
                     'year' => $movie->year,
                     'synopsis' => $movie->synopsis,
@@ -85,7 +86,7 @@ class MoviesController extends BaseController
                 $movieData = [
                     'id' => $movie->id,
                     'title' => $movie->title,
-                    'director' => $movie->director->name,
+                    'director' => $movie->director_id,
                     'year' => $movie->year,
                     'synopsis' => $movie->synopsis,
                 ];
