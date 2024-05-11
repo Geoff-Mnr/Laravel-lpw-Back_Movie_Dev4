@@ -36,8 +36,6 @@ class UsersController extends BaseController
                     'nbMovies' => $user->movies->count(),
                 ];
             });
-           
-
             return $this->handleResponse('Users retrieved successfully', $users, 200);
         } catch (Exception $e) {
             return $this->handleError($e->getMessage(), 400);
